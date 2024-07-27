@@ -22,9 +22,7 @@ CELERY_RESULT_SERIALIZER = 'json'
 CELERY_TIMEZONE = 'UTC'
 
 ELASTICSEARCH_DSL = {
-    'default': {
-        'hosts': ['http://elasticsearch:9200'],
-    },
+    'default': {'hosts': 'elasticsearch:9200'},
 }
 
 INSTALLED_APPS = [
@@ -35,6 +33,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework',
+    'django_elasticsearch_dsl',
     'tasks',
 ]
 

@@ -1,19 +1,26 @@
-from elasticsearch_dsl import Document, Text, Date
+from elasticsearch_dsl import Document, field
+from django_elasticsearch_dsl.registries import registry
 from elasticsearch_dsl.connections import connections
+from .models import Task
 
-connections.create_connection()
 connections.configure(
-    default={'hosts': 'localhost:9200'}
+    default={'hosts': 'localhost'},
+    dev={
+        'hosts': ['localhost:9200'],
+        'sniff_on_start': True
+    }
 )
 
 
 class TaskDocument(Document):
-    title = Text()
-    description = Text()
-    created_at = Date()
+    title = field.Text()
+    description = field.Text()
 
     class Index:
         name = 'tasks'
 
+    class Django:
+        model = Task
 
-TaskDocument.init()
+
+registry.register_document(TaskDocument)
