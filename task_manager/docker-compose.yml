@@ -1,0 +1,55 @@
+version: '3'
+
+volumes:
+  postgres_data:
+
+services:
+  db:
+    image: postgres
+    env_file: .env
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  rabbitmq:
+    image: rabbitmq:3-management
+    ports:
+      - "15672:15672"
+      - "5672:5672"
+
+  elasticsearch:
+    image: elasticsearch:8.7.1
+    environment:
+      - discovery.type=single-node
+    ports:
+      - "9200:9200"
+      - "9300:9300"
+
+  web:
+    build: .
+    env_file: .env
+    volumes:
+      - .:/task_manager
+    ports:
+      - 8000:8000
+    depends_on:
+      - db
+      - rabbitmq
+      - elasticsearch
+
+  celery:
+    build: .
+    command: celery -A task_manager worker --loglevel=info
+    volumes:
+      - .:/task_manager
+    depends_on:
+      - web
+      - rabbitmq
+
+  flower:
+    image: mher/flower
+    environment:
+      - CELERY_BROKER_URL=amqp://rabbitmq
+    ports:
+      - "5555:5555"
+    depends_on:
+      - rabbitmq
