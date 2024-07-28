@@ -21,6 +21,9 @@ services:
     environment:
       - xpack.security.enabled=false
       - discovery.type=single-node
+    volumes:
+      - .:/elasticsearch_data
+
     ports:
       - "9200:9200"
 

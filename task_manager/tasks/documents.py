@@ -1,26 +1,16 @@
-from elasticsearch_dsl import Document, field
-from django_elasticsearch_dsl.registries import registry
-from elasticsearch_dsl.connections import connections
 from .models import Task
 
-connections.configure(
-    default={'hosts': 'localhost'},
-    dev={
-        'hosts': ['localhost:9200'],
-        'sniff_on_start': True
-    }
+from django_elasticsearch_dsl import Document, Index
+
+task_index = Index('tasks')
+task_index.settings(
+    number_of_shard=1,
+    number_of_replicas=0,
 )
 
 
+@task_index.doc_type
 class TaskDocument(Document):
-    title = field.Text()
-    description = field.Text()
-
-    class Index:
-        name = 'tasks'
-
     class Django:
         model = Task
-
-
-registry.register_document(TaskDocument)
+        fields = {'id', 'title', 'description'}
