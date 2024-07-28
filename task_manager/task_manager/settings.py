@@ -1,18 +1,12 @@
-import os
 from pathlib import Path
-
-from dotenv import load_dotenv
-
-load_dotenv()
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+SECRET_KEY = 'django-insecure-y7qr-laj97w31&%s3x9%7$tqmf!xx@l$_)e$8z$=i1110plac$'
 
-SECRET_KEY = os.getenv('SECRET_KEY')
+DEBUG = True
 
-DEBUG = os.getenv('DEBUG')
-
-ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS').split(' ')
+ALLOWED_HOSTS = []
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -21,10 +15,10 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'rest_framework',
-    'tasks',
     'django_elasticsearch_dsl',
-    'django_elasticsearch_dsl_drf',
+    'rest_framework',
+    'api',
+    'search',
 ]
 
 MIDDLEWARE = [
@@ -57,26 +51,18 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'task_manager.wsgi.application'
 
-
-if DEBUG:
-    DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.sqlite3',
-            'NAME': BASE_DIR / 'db.sqlite3',
-        }
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',
     }
-else:
-    DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.postgresql',
-            'NAME': os.getenv('POSTGRES_DB', 'django'),
-            'USER': os.getenv('POSTGRES_USER', 'django'),
-            'PASSWORD': os.getenv('POSTGRES_PASSWORD', ''),
-            'HOST': os.getenv('DB_HOST', ''),
-            'PORT': os.getenv('DB_PORT', 5432)
-        }
-    }
+}
 
+ELASTICSEARCH_DSL = {
+    'default': {
+        'hosts': 'http://localhost:9200'
+    },
+}
 
 AUTH_PASSWORD_VALIDATORS = [
     {
@@ -94,7 +80,7 @@ AUTH_PASSWORD_VALIDATORS = [
 ]
 
 
-LANGUAGE_CODE = 'ru-ru'
+LANGUAGE_CODE = 'en-us'
 
 TIME_ZONE = 'UTC'
 
@@ -102,19 +88,11 @@ USE_I18N = True
 
 USE_TZ = True
 
-
 STATIC_URL = 'static/'
-
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-CELERY_BROKER_URL = 'amqp://guest:guest@rabbitmq:5672//'
-CELERY_RESULT_BACKEND = 'rpc://'
-CELERY_ACCEPT_CONTENT = ['json']
-CELERY_TASK_SERIALIZER = 'json'
-CELERY_RESULT_SERIALIZER = 'json'
-CELERY_TIMEZONE = 'UTC'
-
-ELASTICSEARCH_DSL = {
-    'default': {'hosts': 'http://localhost:9200'},
+REST_FRAMEWORK = {
+    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination',
+    'PAGE_SIZE': 25
 }
