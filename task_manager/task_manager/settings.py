@@ -8,6 +8,8 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
+CELERY_BROKER_URL = 'amqp://localhost'
+
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
@@ -60,8 +62,19 @@ DATABASES = {
 
 ELASTICSEARCH_DSL = {
     'default': {
-        'hosts': 'http://localhost:9200'
+        'hosts': 'http://elasticsearch:9200'
     },
+}
+
+ELASTICSEARCH_DSL_INDEX_SETTINGS = {
+    'settings': {
+        'number_of_shards': 1,
+        'number_of_replicas': 0
+    }
+}
+
+ELASTICSEARCH_INDEX_NAMES = {
+    'task_manager.documents': 'task_manager'
 }
 
 AUTH_PASSWORD_VALIDATORS = [

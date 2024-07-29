@@ -12,11 +12,11 @@ class SearchTasks(APIView, LimitOffsetPagination):
     def get(self, request, query):
         try:
             q = Q(
-                'multi_match', query=query,
-                fields=[
-                    'title',
-                    'description',
-                ], fuzziness='auto')
+                'multi_match',
+                query=query,
+                fields=['title', 'description'],
+                fuzziness='auto'
+            )
             search = TaskDocument.search().query(q)
             response = search.execute()
             results = self.paginate_queryset(response, request, view=self)

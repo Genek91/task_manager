@@ -1,4 +1,17 @@
 services:
+  task_manager:
+    build: .
+    volumes:
+      - task_manager_data:/task_manager_data
+    ports:
+      - 8000:8000
+    environment:
+      - ELASTICSEARCH_URL=http://elasticsearch:9200
+      - CELERY_BROKER_URL=amqp://guest:guest@rabbitmq:5672//
+    depends_on:
+      - elasticsearch
+      - rabbitmq
+
   elasticsearch:
     image: elasticsearch:8.14.3
     volumes:
@@ -9,5 +22,34 @@ services:
       - discovery.type=single-node
       - xpack.security.enabled=false
 
+  rabbitmq:
+    image: rabbitmq:3-management
+    volumes:
+      - rabbitmq_data:/rabbitmq_data
+    ports:
+      - 5672:5672
+      - 15672:15672
+    environment:
+      - RABBITMQ_DEFAULT_USER=guest
+      - RABBITMQ_DEFAULT_PASS=guest
+
+  celery:
+    build: .
+    volumes:
+      - task_manager_data:/task_manager_data
+    command: celery -A task_manager worker -l INFO
+    depends_on:
+      - task_manager
+      - rabbitmq
+
+  flower:
+    image: mher/flower
+    ports:
+      - "8003:8003"
+    environment:
+      - FLOWER_BROKER_URL=amqp://guest:guest@rabbitmq:5672//
+
 volumes:
+  task_manager_data:
   es_data:
+  rabbitmq_data:
