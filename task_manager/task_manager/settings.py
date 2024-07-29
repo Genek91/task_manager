@@ -8,7 +8,7 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
-CELERY_BROKER_URL = 'amqp://localhost'
+CELERY_BROKER_URL = 'amqp://guest:guest@rabbitmq:5672//'
 
 INSTALLED_APPS = [
     'django.contrib.admin',

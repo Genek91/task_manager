@@ -45,9 +45,11 @@ services:
   flower:
     image: mher/flower
     ports:
-      - "8003:8003"
+      - 5555:5555
     environment:
       - FLOWER_BROKER_URL=amqp://guest:guest@rabbitmq:5672//
+    depends_on:
+      - rabbitmq
 
 volumes:
   task_manager_data:
